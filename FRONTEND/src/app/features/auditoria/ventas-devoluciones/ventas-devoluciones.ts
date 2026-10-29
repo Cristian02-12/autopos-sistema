@@ -18,11 +18,57 @@ export class VentasDevoluciones implements AfterViewInit {
   ngAfterViewInit(): void {
     const win = window as any;
 
-    win.renderAuditModule = () => {
+    // Garantizar que los arreglos existan en CajaNcr aunque algún archivo antiguo no los hubiera inicializado
+    if (!Array.isArray(this.caja.salesHistoryDB) || this.caja.salesHistoryDB.length === 0) {
+      this.caja.salesHistoryDB = [
+        {
+          uniqueId: '880001',
+          serie: 'BJ83-011781',
+          docType: 'Boleta',
+          date: '24.10.26 09:10',
+          cashierCode: '0019',
+          cashierName: 'CRISTIAN ELINSON OLA',
+          customerDoc: '45892104',
+          customerName: 'CARLOS MENDOZA VARGAS (TOYOTA YARIS)',
+          items: [
+            { productId: 1, barcode: '671576', sku: 'FR-001', name: 'PASTILLA FRENO DEL. YARIS CERAMICA', qty: 1, returnedQty: 0, price: 95.0 },
+            { productId: 3, barcode: '20391060', sku: 'MT-101', name: 'FILTRO ACEITE SELLADO TOYOTA 1NZ', qty: 2, returnedQty: 0, price: 35.0 }
+          ],
+          payments: [{ method: 'QR SIP', label: 'QR SIP', amount: 165.0 }],
+          total: 165.0,
+          change: 0.0,
+          status: 'COMPLETADA',
+          voucherHtml: ''
+        }
+      ];
+    }
+
+    if (!Array.isArray(this.caja.returnsHistoryDB) || this.caja.returnsHistoryDB.length === 0) {
+      this.caja.returnsHistoryDB = [
+        {
+          returnId: '990001',
+          originalSaleId: '880000',
+          date: '23.10.26 17:40',
+          type: 'PARCIAL',
+          customerName: 'TALLER MECANICO EL RAPIDO E.I.R.L.',
+          customerDoc: '10458921041',
+          cashierName: 'CRISTIAN ELINSON OLA',
+          refundChannel: 'DIGITAL_EXTORNO (Yape/Plin/Transferencia por Sup.)',
+          totalRefunded: 35.0,
+          items: [{ barcode: '20391060', name: 'FILTRO ACEITE SELLADO TOYOTA 1NZ', qty: 1, price: 35.0 }],
+          voucherHtml: ''
+        }
+      ];
+    }
+
+    const renderAudit = () => {
+      const salesSource: any[] = win.salesHistoryDB || this.caja.salesHistoryDB || [];
+      const returnsSource: any[] = win.returnsHistoryDB || this.caja.returnsHistoryDB || [];
+
       const sQuery = ((document.getElementById('audit-sales-search') as HTMLInputElement)?.value || '').trim().toLowerCase();
       const sDate = ((document.getElementById('audit-sales-date') as HTMLInputElement)?.value || '').trim().toLowerCase();
 
-      const filteredSales = this.caja.salesHistoryDB.filter(s => {
+      const filteredSales = salesSource.filter(s => {
         const matchText = !sQuery || `${s.uniqueId} ${s.serie} ${s.customerName} ${s.customerDoc} ${s.cashierName}`.toLowerCase().includes(sQuery);
         const matchDate = !sDate || s.date.toLowerCase().includes(sDate);
         return matchText && matchDate;
@@ -35,7 +81,7 @@ export class VentasDevoluciones implements AfterViewInit {
       if (salesListEl) {
         salesListEl.innerHTML = filteredSales
           .map(s => {
-            const methodsText = s.payments.map((p: any) => `${p.label || p.method}: S/ ${p.amount.toFixed(2)}`).join(' | ');
+            const methodsText = (s.payments || []).map((p: any) => `${p.label || p.method}: S/ ${Number(p.amount).toFixed(2)}`).join(' | ');
             return `
               <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white transition-all space-y-2">
                   <div class="flex items-center justify-between">
@@ -50,7 +96,7 @@ export class VentasDevoluciones implements AfterViewInit {
                           <p class="font-bold text-slate-900">${s.customerName} <span class="font-mono-code text-slate-500">(${s.customerDoc})</span></p>
                           <p class="text-[11px] text-slate-500">Cajero: ${s.cashierName} • Pagos: ${methodsText}</p>
                       </div>
-                      <span class="font-mono-code font-black text-sm text-emerald-700">S/ ${s.total.toFixed(2)}</span>
+                      <span class="font-mono-code font-black text-sm text-emerald-700">S/ ${Number(s.total).toFixed(2)}</span>
                   </div>
                   <div class="flex items-center justify-between pt-2 border-t border-slate-200">
                       <span class="text-[10px] font-extrabold px-2 py-0.5 rounded ${s.status === 'COMPLETADA' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${s.status}</span>
@@ -72,7 +118,7 @@ export class VentasDevoluciones implements AfterViewInit {
       const rQuery = ((document.getElementById('audit-returns-search') as HTMLInputElement)?.value || '').trim().toLowerCase();
       const rDate = ((document.getElementById('audit-returns-date') as HTMLInputElement)?.value || '').trim().toLowerCase();
 
-      const filteredReturns = this.caja.returnsHistoryDB.filter(r => {
+      const filteredReturns = returnsSource.filter(r => {
         const matchText = !rQuery || `${r.returnId} ${r.originalSaleId} ${r.customerName} ${r.customerDoc} ${r.type}`.toLowerCase().includes(rQuery);
         const matchDate = !rDate || r.date.toLowerCase().includes(rDate);
         return matchText && matchDate;
@@ -98,7 +144,7 @@ export class VentasDevoluciones implements AfterViewInit {
                         <p class="font-bold text-slate-900">${r.customerName}</p>
                         <p class="text-[11px] text-slate-600">Modalidad: <strong>${r.type}</strong> • Canal: ${r.refundChannel}</p>
                     </div>
-                    <span class="font-mono-code font-black text-sm text-rose-700">-S/ ${r.totalRefunded.toFixed(2)}</span>
+                    <span class="font-mono-code font-black text-sm text-rose-700">-S/ ${Number(r.totalRefunded).toFixed(2)}</span>
                 </div>
                 <div class="flex justify-end pt-2 border-t border-rose-100">
                     <button onclick="viewReturnVoucherFromAudit('${r.returnId}')" class="px-2.5 py-1 bg-rose-800 hover:bg-rose-700 text-white rounded-lg font-bold text-[11px]">
@@ -111,118 +157,14 @@ export class VentasDevoluciones implements AfterViewInit {
       }
     };
 
-    win.viewSaleVoucherFromAudit = (uniqueId: string) => {
-      const s = this.caja.salesHistoryDB.find(x => x.uniqueId === uniqueId);
-      if (!s) return;
-      const cfg = this.auth.systemConfig;
-      const usr = this.auth.currentUser;
-      const opGravada = s.total / 1.18;
-      const igv = s.total - opGravada;
-      const totalUnits = s.items.reduce((acc: number, i: any) => acc + i.qty, 0);
-      const totalPaid = s.payments.reduce((acc: number, p: any) => acc + p.amount, 0);
+    win.renderAuditModule = renderAudit;
 
-      const itemsHtml = s.items
-        .map((i: any) => {
-          const lineTotal = (i.qty * i.price).toFixed(2);
-          return `<div class="flex justify-between"><span class="truncate max-w-[190px]">${i.barcode} ${i.qty}x ${i.name}</span><span>${lineTotal}</span></div>`;
-        })
-        .join('');
-
-      const html = s.voucherHtml || `
-        <div class="text-center space-y-0.5 mb-2">
-            <p class="font-bold">${cfg.companyName}</p>
-            <p>RUC ${cfg.ruc}</p>
-            <p>${cfg.address}</p>
-            <p>${cfg.district}</p>
-            <p class="font-bold pt-1">${s.docType.toUpperCase()} DE VENTA ELECTRONICA</p>
-            <p class="font-bold">${s.serie}</p>
-            <p class="font-bold text-indigo-800 bg-indigo-50 py-0.5 rounded border border-indigo-200 mt-1">ID ÚNICO BOLETA: ${s.uniqueId}</p>
-        </div>
-        <div class="space-y-0.5 mb-2">
-            <p>CAJERO &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ${parseInt(s.cashierCode || '19', 10)}</p>
-            <p>CLIENTE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ${s.customerName} (${s.customerDoc})</p>
-            ${itemsHtml}
-            <div class="flex justify-between pt-1">
-                <span>SUBTOTAL &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S/</span>
-                <span>${s.total.toFixed(2)}</span>
-            </div>
-            <p>${totalUnits} UNIDAD(ES)</p>
-        </div>
-        <div class="space-y-0.5 border-t border-dashed border-slate-400 pt-1.5 mb-2">
-            <div class="flex justify-between"><span>OP. EXONERADA</span><span>0.00</span></div>
-            <div class="flex justify-between"><span>OP. INAFECTA</span><span>0.00</span></div>
-            <div class="flex justify-between"><span>OP. GRAVADA</span><span>${opGravada.toFixed(2)}</span></div>
-            <div class="flex justify-between"><span>I.G.V. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S/</span><span>${igv.toFixed(2)}</span></div>
-            <div class="flex justify-between font-bold"><span>TOTAL A PAGAR &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S/</span><span>${s.total.toFixed(2)}</span></div>
-            <div class="border-t border-dotted border-slate-300 my-1 pt-1 space-y-0.5">
-                ${s.payments.map((p: any) => `<div class="flex justify-between"><span>${p.label || p.method}</span><span>${p.amount.toFixed(2)}</span></div>`).join('')}
-            </div>
-            <div class="flex justify-between font-bold"><span>TOTAL RECIBIDO &nbsp;&nbsp;&nbsp;&nbsp;S/</span><span>${totalPaid.toFixed(2)}</span></div>
-            <div class="flex justify-between font-bold text-emerald-800"><span>VUELTO &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S/</span><span>${(s.change || 0).toFixed(2)}</span></div>
-        </div>
-        <div class="text-center my-2 pt-1 border-t border-dashed border-slate-400">
-            <svg class="w-20 h-20 mx-auto text-slate-900" viewBox="0 0 100 100" fill="currentColor">
-                <path d="M10 10h25v25H10zM15 15v15h15V15zM20 20h5v5h-5zM65 10h25v25H65zM70 15v15h15V15zM75 20h5v5h-5zM10 65h25v25H10zM15 70v15h15V70zM20 75h5v5h-5zM45 15h10v15H45zM40 40h20v20H40zM70 45h15v10H70zM45 70h15v20H45zM70 70h20v20H70z"/>
-            </svg>
-            <p class="font-bold text-xs tracking-widest mt-1">ID QR COMPRA: ${s.uniqueId}</p>
-            <p class="text-[9px] text-slate-600 mt-0.5 leading-tight">
-                Para devoluciones parciales o completas digite el código único <strong>${s.uniqueId}</strong> en la barra principal.
-            </p>
-        </div>
-        <div class="text-[10px] flex justify-between pt-2 mt-1 border-t border-slate-200">
-            <span>${cfg.currentTranNumber} ${cfg.localCode}/${cfg.cajaCode}/${usr.shortCode}</span>
-            <span>${s.date} AC-00</span>
-        </div>
-      `;
-      win.openVoucherModal?.(`Comprobante Emitido (ID: ${s.uniqueId})`, html, 'STAY_AUDIT');
-    };
-
-    win.viewReturnVoucherFromAudit = (returnId: string) => {
-      const r = this.caja.returnsHistoryDB.find(x => x.returnId === returnId);
-      if (!r) return;
-      const cfg = this.auth.systemConfig;
-      const itemsHtml = r.items
-        .map((i: any) => {
-          const lineTotal = (i.qty * i.price).toFixed(2);
-          return `<div class="flex justify-between"><span>${i.barcode} ${i.qty}x ${i.name}</span><span>-${lineTotal}</span></div>`;
-        })
-        .join('');
-
-      const html = r.voucherHtml || `
-        <div class="text-center space-y-0.5 mb-2">
-            <p class="font-bold">${cfg.companyName}</p>
-            <p>RUC ${cfg.ruc}</p>
-            <p>${cfg.address}</p>
-            <p class="font-bold pt-1 text-rose-800">COMPROBANTE DE DEVOLUCIÓN (${r.type})</p>
-            <p class="font-bold">ID DEVOLUCIÓN: ${r.returnId}</p>
-            <p>BOLETA ORIGEN: ${r.originalSaleId}</p>
-        </div>
-        <div class="border-t border-dashed border-slate-400 py-1.5 space-y-0.5">
-            ${itemsHtml}
-        </div>
-        <div class="border-t border-dashed border-slate-400 pt-1 font-bold flex justify-between text-rose-800">
-            <span>TOTAL REEMBOLSADO S/</span>
-            <span>-${r.totalRefunded.toFixed(2)}</span>
-        </div>
-        <div class="text-center my-2 pt-1 border-t border-dashed border-slate-400">
-            <svg class="w-20 h-20 mx-auto text-slate-900" viewBox="0 0 100 100" fill="currentColor">
-                <path d="M10 10h25v25H10zM15 15v15h15V15zM20 20h5v5h-5zM65 10h25v25H65zM70 15v15h15V15zM75 20h5v5h-5zM10 65h25v25H10zM15 70v15h15V70zM20 75h5v5h-5zM45 15h10v15H45zM40 40h20v20H40zM70 45h15v10H70zM45 70h15v20H45zM70 70h20v20H70z"/>
-            </svg>
-            <p class="font-bold text-xs tracking-widest mt-1">ID QR DEVOLUCIÓN: ${r.returnId}</p>
-        </div>
-      `;
-      win.openVoucherModal?.(`Baucher de Devolución (ID: ${r.returnId})`, html, 'STAY_AUDIT');
-    };
-
-    win.sendSaleToReturnFromAudit = (uniqueId: string, mode: string) => {
-      const sale = this.caja.salesHistoryDB.find(s => s.uniqueId === uniqueId);
-      if (!sale) return;
-      this.caja.returnFlowState.mode = mode;
-      win.switchModule?.('pos');
-      win.loadSaleForReturn?.(sale);
-    };
-
-    // Renderizar datos iniciales de auditoría apenas carga el componente
-    setTimeout(() => win.renderAuditModule?.(), 0);
+    // Asegurar que después de que el padre (TerminalNcr) termine su ngAfterViewInit, renderAuditModule siga activo y pinte los datos
+    setTimeout(() => {
+      win.renderAuditModule = renderAudit;
+      renderAudit();
+      document.getElementById('mod-btn-audit')?.addEventListener('click', () => setTimeout(renderAudit, 20));
+      document.getElementById('mob-btn-audit')?.addEventListener('click', () => setTimeout(renderAudit, 20));
+    }, 100);
   }
 }

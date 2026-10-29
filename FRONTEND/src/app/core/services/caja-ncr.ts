@@ -137,7 +137,7 @@ export class CajaNcr {
   }
 
   getUnitEffectivePrice(item: any): number {
-    const prod = this.inv.productsDB.find(p => p.id === item.productId);
+    const prod = (this.inv.productsDB || []).find((p: any) => p.id === item.productId);
     const pubPrice = prod ? prod.price : item.price;
     const mechPrice = prod && prod.mechanicPrice ? prod.mechanicPrice : Math.round(pubPrice * 0.85 * 100) / 100;
     return this.isMechanicPrice ? mechPrice : pubPrice;
