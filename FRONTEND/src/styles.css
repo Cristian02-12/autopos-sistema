@@ -1,1 +1,152 @@
-/* You can add global styles to this file, and also import other style files */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #0f172a;
+  color: #0f172a;
+  overflow-x: hidden;
+  margin: 0;
+}
+
+.font-mono-code {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+app-login,
+app-navbar-roles,
+app-visor-baucher-modal,
+app-teclado-ncr,
+app-menu-supervisor,
+app-devoluciones,
+app-catalogo-equivalencias,
+app-layout-inventario,
+app-tabla-stock,
+app-conteo-ciclico,
+app-ingreso-mercaderia,
+app-actualizar-precios,
+app-cotizador-a4,
+app-ventas-devoluciones,
+app-panel-dueno-reportes,
+app-panel-programador {
+  display: contents;
+}
+
+/* NCR Hardware Key Styling (Idéntico a sistema_visual_autopos.html) */
+.ncr-key {
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 2px solid #94a3b8;
+  border-bottom-width: 4px;
+  border-right-width: 3px;
+  border-radius: 6px;
+  color: #1e293b;
+  font-weight: 800;
+  text-transform: uppercase;
+  transition: all 0.08s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ncr-key:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  border-color: #64748b;
+}
+
+.ncr-key:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+
+.ncr-num-key {
+  background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
+  border: 2px solid #64748b;
+  border-bottom-width: 4px;
+  font-size: 1.15rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Softkey Touch Buttons on Screen Right Column */
+.touch-softkey {
+  background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+  border: 1.5px solid #64748b;
+  border-radius: 6px;
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  transition: all 0.12s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.35rem 0.5rem;
+  box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.touch-softkey:hover:not(:disabled) {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #d97706;
+}
+
+.touch-softkey:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Scrollbars personalizados */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 6px;
+}
+
+/* Ajustes Responsive para móviles, tablets y laptops */
+@media (max-width: 1024px) {
+  #module-pos {
+    height: auto !important;
+    min-height: calc(100vh - 60px);
+    overflow-y: auto !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .touch-softkey {
+    font-size: 0.62rem;
+    padding: 0.25rem;
+  }
+  .ncr-key {
+    font-size: 9px;
+  }
+}
+
+/* Impresión en Hoja A4 Normal para Cotizaciones y Reportes PDF */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #a4-quote-printable,
+  #a4-quote-printable * {
+    visibility: visible;
+  }
+  #a4-quote-printable {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white;
+    padding: 20px;
+    box-shadow: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

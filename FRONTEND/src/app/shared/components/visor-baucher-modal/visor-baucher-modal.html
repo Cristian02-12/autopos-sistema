@@ -1,1 +1,98 @@
-<p>visor-baucher-modal works!</p>
+<!-- =====================================================================
+         MODAL DE BAUCHER DIGITAL (FONDO FIJO, COMPRA, REPORTE, RETIRO, ARQUEO, CIERRE)
+         ===================================================================== -->
+<div id="voucher-modal"
+  class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-3">
+  <div
+    class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-300 overflow-hidden flex flex-col max-h-[92vh]">
+
+    <!-- Cabecera Digital / Envío WhatsApp -->
+    <div class="bg-slate-900 text-white px-4 py-3 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-receipt text-amber-400"></i>
+        <span id="voucher-modal-title" class="font-extrabold text-xs uppercase tracking-wider">Baucher Digital
+          Emitido</span>
+      </div>
+      <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded">100%
+        Digital • Sin Impresora Térmica</span>
+    </div>
+
+    <!-- Cuerpo del Baucher (Idéntico a las fotos reales de tus tickets!) -->
+    <div class="p-5 overflow-y-auto bg-[#fafaf9] flex-1">
+      <div id="voucher-paper"
+        class="bg-white p-5 shadow-md border border-slate-200 font-mono-code text-[11px] leading-snug text-slate-900 mx-auto max-w-xs">
+        <!-- Contenido dinámico del baucher -->
+      </div>
+    </div>
+
+    <!-- Envío Digital por WhatsApp (Para Comprobantes de Venta o Reportes al Supervisor) -->
+    <div class="p-4 bg-slate-100 border-t border-slate-200 space-y-2.5 shrink-0">
+      <div class="flex items-center gap-2">
+        <div class="relative flex-1">
+          <i class="fa-brands fa-whatsapp absolute left-3 top-1/2 -translate-y-1/2 text-emerald-600 text-sm"></i>
+          <input type="text" id="voucher-wsp-phone" placeholder="Celular WhatsApp Cliente/Sup (Ej. 987654321)"
+            class="w-full pl-8 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono-code font-bold focus:outline-none focus:border-emerald-600">
+        </div>
+        <button onclick="sendVoucherWhatsApp()"
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5 shadow shrink-0">
+          <i class="fa-brands fa-whatsapp text-sm"></i> Enviar Comprobante
+        </button>
+      </div>
+      <button onclick="closeVoucherModal()"
+        class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl uppercase tracking-wider">
+        Cerrar Baucher y Continuar (Enter)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================================
+         MODAL DE PAGO QR SIP (PIDE DNI Y LUEGO MUESTRA QR PARA ESCANEAR)
+         ===================================================================== -->
+<div id="qrsip-modal"
+  class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-3">
+  <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl border border-slate-200 overflow-hidden">
+    <div class="bg-[#1e3a8a] text-white px-5 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="font-black text-base tracking-tight">QR SIP</span>
+        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded font-bold">Yape / Plin / Bancos</span>
+      </div>
+      <button onclick="closeQrSipModal()" class="text-white/70 hover:text-white"><i
+          class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="p-5 space-y-4 text-xs">
+      <!-- Paso 1: Ingresar DNI -->
+      <div>
+        <label class="font-extrabold text-slate-700 uppercase block mb-1">1. Ingrese DNI para QR SIP y presione
+          Enter:</label>
+        <div class="flex gap-2">
+          <input type="text" id="qrsip-dni-input" maxlength="8" value="73075981"
+            onkeydown="if(event.key==='Enter') generateQrSipCode()"
+            class="flex-1 p-2.5 border-2 border-blue-600 rounded-xl font-mono-code font-bold text-sm text-center"
+            placeholder="8 dígitos DNI">
+          <button onclick="generateQrSipCode()" class="px-4 py-2 bg-blue-700 text-white font-bold rounded-xl">Generar
+            QR</button>
+        </div>
+      </div>
+
+      <!-- Paso 2: Escaneo del QR -->
+      <div id="qrsip-display-box" class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-center space-y-2">
+        <p class="font-bold text-slate-700">Monto a cobrar: <span id="qrsip-amount-label"
+            class="font-mono-code font-black text-base text-blue-800">S/ 0.00</span></p>
+        <div class="bg-white p-3 rounded-xl border border-slate-300 inline-block mx-auto shadow-sm">
+          <svg class="w-36 h-36 text-slate-900" viewBox="0 0 100 100" fill="currentColor">
+            <path
+              d="M10 10h25v25H10zM15 15v15h15V15zM20 20h5v5h-5zM65 10h25v25H65zM70 15v15h15V15zM75 20h5v5h-5zM10 65h25v25H10zM15 70v15h15V70zM20 75h5v5h-5zM45 10h10v10H45zM45 25h5v15h-5zM55 30h5v10h-5zM10 45h15v5H10zM30 45h20v5H30zM45 55h15v10H45zM65 45h10v15H65zM80 45h10v10H80zM45 70h10v20H45zM60 65h15v10H60zM80 65h10v25H80zM60 80h15v10H60z" />
+          </svg>
+        </div>
+        <p class="text-[11px] text-slate-500">El cliente escanea desde su billetera digital</p>
+      </div>
+
+      <button onclick="confirmQrSipPayment()"
+        class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl text-xs uppercase shadow-lg">
+        <i class="fa-solid fa-check-circle mr-1"></i> Pago QR Confirmado (Emitir Baucher)
+      </button>
+    </div>
+  </div>
+</div>

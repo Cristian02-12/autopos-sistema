@@ -1,1 +1,111 @@
-<p>tabla-stock works!</p>
+<div id="inv-subview-catalog" class="space-y-4">
+  <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+    <button onclick="setInvStatusSegment('ALL')" id="seg-btn-ALL" class="p-3.5 rounded-2xl bg-slate-900 text-white border-2 border-slate-900 text-left transition-all shadow-sm flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-300 block">Vista General</span>
+        <span class="text-sm font-black">Todos los Productos</span>
+      </div>
+      <span id="seg-count-ALL" class="font-mono-code text-lg font-black bg-white/15 px-2.5 py-1 rounded-xl">0</span>
+    </button>
+
+    <button onclick="setInvStatusSegment('IN_STOCK')" id="seg-btn-IN_STOCK" class="p-3.5 rounded-2xl bg-white hover:bg-emerald-50/60 text-slate-900 border-2 border-emerald-500/40 text-left transition-all shadow-sm flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 block">🟢 Óptimo para Venta</span>
+        <span class="text-sm font-black text-emerald-950">Productos con Stock</span>
+      </div>
+      <span id="seg-count-IN_STOCK" class="font-mono-code text-lg font-black bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-xl">0</span>
+    </button>
+
+    <button onclick="setInvStatusSegment('LOW_STOCK')" id="seg-btn-LOW_STOCK" class="p-3.5 rounded-2xl bg-white hover:bg-amber-50/60 text-slate-900 border-2 border-amber-500/40 text-left transition-all shadow-sm flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 block">🟡 Alerta de Reposición</span>
+        <span class="text-sm font-black text-amber-950">Bajas Unidades</span>
+      </div>
+      <span id="seg-count-LOW_STOCK" class="font-mono-code text-lg font-black bg-amber-100 text-amber-800 px-2.5 py-1 rounded-xl">0</span>
+    </button>
+
+    <button onclick="setInvStatusSegment('OUT_OF_STOCK')" id="seg-btn-OUT_OF_STOCK" class="p-3.5 rounded-2xl bg-white hover:bg-rose-50/60 text-slate-900 border-2 border-rose-500/40 text-left transition-all shadow-sm flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-rose-700 block">🔴 Sin Existencias (0)</span>
+        <span class="text-sm font-black text-rose-950">Productos Agotados</span>
+      </div>
+      <span id="seg-count-OUT_OF_STOCK" class="font-mono-code text-lg font-black bg-rose-100 text-rose-800 px-2.5 py-1 rounded-xl">0</span>
+    </button>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="p-4 bg-slate-50 border-b border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 text-xs">
+      <div class="lg:col-span-2">
+        <label class="font-bold text-slate-600 block mb-1">Buscar Repuesto (Código, SKU, OEM, Auto):</label>
+        <input type="text" id="inv-filter-input" oninput="renderInventoryModule()" placeholder="Ej. 671576, FR-001, 04465-0D150, Yaris..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs">
+      </div>
+      <div>
+        <label class="font-bold text-slate-600 block mb-1">Categoría de Autoparte:</label>
+        <select id="inv-filter-category" onchange="renderInventoryModule()" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold">
+          <option value="">Todas las Categorías</option>
+          <option value="Frenos y Discos">Frenos y Discos</option>
+          <option value="Filtros y Motor">Filtros y Motor</option>
+          <option value="Suspensión y Dirección">Suspensión y Dirección</option>
+          <option value="Sistema Eléctrico y Bujías">Sistema Eléctrico y Bujías</option>
+          <option value="Lubricantes y Fluidos">Lubricantes y Fluidos</option>
+        </select>
+      </div>
+      <div>
+        <label class="font-bold text-slate-600 block mb-1">Marca Fabricante:</label>
+        <select id="inv-filter-brand" onchange="renderInventoryModule()" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold">
+          <option value="">Todas las Marcas</option>
+          <option value="Kashiyama">Kashiyama</option>
+          <option value="Toyota Genuine">Toyota Genuine</option>
+          <option value="Denso">Denso</option>
+          <option value="Castrol">Castrol</option>
+          <option value="KYB">KYB Japón</option>
+          <option value="NGK">NGK</option>
+          <option value="Bosch">Bosch</option>
+        </select>
+      </div>
+      <div>
+        <label class="font-bold text-slate-600 block mb-1">Ubicación / Pasillo:</label>
+        <select id="inv-filter-location" onchange="renderInventoryModule()" class="w-full px-2.5 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold">
+          <option value="">Todo el Almacén</option>
+          <option value="Pasillo A">Pasillo A (Frenos)</option>
+          <option value="Pasillo B">Pasillo B (Motor)</option>
+          <option value="Pasillo C">Pasillo C (Suspensión)</option>
+          <option value="Pasillo D">Pasillo D (Lubricantes)</option>
+          <option value="Vitrina">Vitrina Principal</option>
+        </select>
+      </div>
+      <div>
+        <label class="font-bold text-slate-600 block mb-1">Ordenar por:</label>
+        <div class="flex gap-1">
+          <select id="inv-filter-sort" onchange="renderInventoryModule()" class="flex-1 px-2 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold">
+            <option value="DEFAULT">Orden Estándar</option>
+            <option value="STOCK_ASC">Menor a Mayor Stock</option>
+            <option value="STOCK_DESC">Mayor a Menor Stock</option>
+            <option value="PRICE_ASC">Precio: Menor a Mayor</option>
+            <option value="PRICE_DESC">Precio: Mayor a Menor</option>
+          </select>
+          <button onclick="resetInventoryFilters()" class="px-2.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-bold" title="Limpiar todos los filtros">
+            <i class="fa-solid fa-rotate-left"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr class="bg-slate-100 text-slate-600 font-extrabold uppercase text-[11px] border-b border-slate-200">
+            <th class="py-3 px-4">Estado / Stock</th>
+            <th class="py-3 px-4">Cód. Barra / SKU / OEM</th>
+            <th class="py-3 px-4">Descripción y Categoría</th>
+            <th class="py-3 px-4">Vehículos Compatibles</th>
+            <th class="py-3 px-4">Ubicación Tienda/Almacén</th>
+            <th class="py-3 px-4 text-right">P. Público / Tarifa Mecánico</th>
+            <th class="py-3 px-4 text-center">Acciones según Rol</th>
+          </tr>
+        </thead>
+        <tbody id="inv-module-tbody" class="divide-y divide-slate-200"></tbody>
+      </table>
+    </div>
+  </div>
+</div>

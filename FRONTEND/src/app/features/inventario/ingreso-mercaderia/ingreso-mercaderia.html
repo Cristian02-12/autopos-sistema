@@ -1,1 +1,53 @@
-<p>ingreso-mercaderia works!</p>
+<div id="inv-subview-restock" class="hidden space-y-4">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
+      <div class="border-b border-slate-200 pb-3">
+        <span class="text-[10px] font-black uppercase text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">RECEPCIÓN DE LOTE / PROVEEDOR</span>
+        <h3 class="text-base font-extrabold text-slate-900 mt-1">Ingreso de Nuevo Stock de Mercadería</h3>
+        <p class="text-xs text-slate-500">Busca el producto por su Código General (Barras), SKU interno de la tienda o por Nombre para sumar las unidades que llegaron.</p>
+      </div>
+
+      <div>
+        <label class="text-xs font-extrabold text-slate-700 block mb-1">1. Buscar Producto (Código General, SKU Interno o Nombre):</label>
+        <input type="text" id="restock-search-input" oninput="renderRestockSearchResults()" placeholder="Escribe código 671576, FR-001 o nombre del repuesto..." class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-300 focus:border-emerald-600 rounded-xl text-xs font-semibold focus:outline-none">
+      </div>
+
+      <div id="restock-search-results" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-60 overflow-y-auto p-1"></div>
+
+      <form onsubmit="confirmMerchandiseEntry(event)" id="restock-form-box" class="bg-emerald-50/70 border-2 border-emerald-500/40 rounded-2xl p-4 space-y-3 text-xs">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-extrabold uppercase text-emerald-800">Producto Seleccionado para Abastecer:</span>
+            <h4 id="restock-selected-name" class="font-black text-sm text-slate-900">Seleccione un producto arriba</h4>
+            <p id="restock-selected-meta" class="font-mono-code text-[11px] text-slate-600">Código: -- | SKU: -- | Stock Actual: --</p>
+          </div>
+          <input type="hidden" id="restock-selected-id">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-emerald-200">
+          <div>
+            <label class="font-extrabold text-slate-700 block mb-1">Unidades que Llegaron (+):</label>
+            <input type="number" id="restock-qty-input" min="1" required placeholder="Ej. 15" class="w-full p-2.5 bg-white border-2 border-emerald-600 rounded-xl font-mono-code font-black text-sm text-slate-900">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="font-extrabold text-slate-700 block mb-1">Guía de Remisión / Factura Proveedor (Opcional):</label>
+            <input type="text" id="restock-doc-input" placeholder="Ej. Guía GR01-004512 Importadora Japón" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl font-mono-code">
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-1">
+          <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl shadow flex items-center gap-2">
+            <i class="fa-solid fa-boxes-packing"></i> Registrar Ingreso y Sumar al Stock
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 flex flex-col">
+      <h4 class="font-extrabold text-xs uppercase tracking-wider text-slate-700 border-b border-slate-200 pb-2.5 mb-3 flex items-center gap-2">
+        <i class="fa-solid fa-clock-rotate-left text-emerald-600"></i> Últimos Ingresos de Mercadería
+      </h4>
+      <div id="restock-history-list" class="space-y-2.5 overflow-y-auto flex-1 text-xs"></div>
+    </div>
+  </div>
+</div>

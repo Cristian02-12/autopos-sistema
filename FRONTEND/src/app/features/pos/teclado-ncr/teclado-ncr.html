@@ -1,1 +1,100 @@
-<p>teclado-ncr works!</p>
+<!-- TECLADO FÍSICO LATERAL NCR (DERECHA - 30%) -->
+<div class="w-full lg:w-80 bg-[#1e2229] rounded-2xl p-3 border-4 border-slate-700 shadow-2xl flex flex-col justify-between shrink-0">
+  <div>
+    <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono-code mb-2 px-1">
+      <span>NCR HARDWARE KEYPAD</span>
+      <span class="text-emerald-400">● SOLO NÚMEROS</span>
+    </div>
+
+    <div class="grid grid-cols-3 gap-1.5">
+      <button onclick="triggerKey('DESLOGUEO')" class="ncr-key h-10 text-[10px]">
+        <span>DESLOGUEO</span><span class="text-[9px] text-slate-500">F1</span>
+      </button>
+      <button onclick="triggerKey('MENU_PRINCIPAL')" class="ncr-key h-10 text-[10px] border-blue-500/80 bg-blue-50">
+        <span>MENU PRINCIPAL</span><span class="text-[9px] text-blue-700">F2</span>
+      </button>
+      <button onclick="triggerKey('VENDEDOR')" class="ncr-key h-10 text-[10px]">
+        <span>TARIFA MECÁNICO</span><span class="text-[9px] text-slate-500">F3</span>
+      </button>
+
+      <button onclick="triggerKey('MENU_SUPERVISOR')" class="ncr-key h-10 text-[10px] border-amber-500/80 bg-amber-50">
+        <span>MENU SUPERVISOR</span><span class="text-[9px] text-amber-700">F4</span>
+      </button>
+      <button onclick="triggerKey('MENU_CAJERO')" class="ncr-key h-10 text-[10px]">
+        <span>MENU DE CAJERO</span><span class="text-[9px] text-slate-500">F5</span>
+      </button>
+      <button onclick="triggerKey('COTIZAR')" class="ncr-key h-10 text-[10px]">
+        <span>COTIZAR HOJA A4</span><span class="text-[9px] text-slate-500">F6</span>
+      </button>
+
+      <button onclick="triggerKey('ANULAR_TRANSAC')" class="ncr-key h-10 text-[10px] text-rose-800">
+        <span>ANULAR TRANSAC</span>
+      </button>
+      <button onclick="triggerKey('CATALOGO')" class="ncr-key h-10 text-[10px] text-indigo-900">
+        <span>BUSCAR PIEZA</span>
+      </button>
+      <button onclick="triggerKey('CLIENTE_DNI')" class="ncr-key h-10 text-[10px]">
+        <span>CLIENTE DNI/RUC</span>
+      </button>
+
+      <button onclick="triggerKey('LIMPIAR')" class="ncr-key h-10 text-[10px]">
+        <span>LIMPIAR TODO</span>
+      </button>
+      <button onclick="triggerKey('CANTIDAD')" class="ncr-key h-10 text-[10px]">
+        <span>CANTIDAD (X)</span>
+      </button>
+      <button onclick="triggerKey('ELIMINAR_ITEM')" class="ncr-key h-10 text-[10px] bg-rose-50 border-rose-400 text-rose-900">
+        <span>BORRAR ITEM</span><span class="text-[8px] text-rose-700">SELECCIONADO</span>
+      </button>
+
+      <button onclick="triggerKey('RETORNAR')" class="ncr-key h-11 col-span-1 bg-amber-50 border-amber-500 text-slate-900 text-[10px]" title="Borra dígito por dígito de derecha a izquierda">
+        <span>RETORNAR (ESC)</span><span class="text-[9px] text-amber-800">⌫ BORRAR DÍGITO</span>
+      </button>
+      <button onclick="triggerKey('TOTAL_IMPRIMIR')" class="ncr-key h-11 col-span-2 bg-emerald-100 border-emerald-600 text-emerald-950 text-xs font-black">
+        <span>TOTAL IMPRIMIR 🖨️</span>
+      </button>
+
+      <button onclick="pressNumpad('7')" class="ncr-key ncr-num-key h-11">7</button>
+      <button onclick="pressNumpad('8')" class="ncr-key ncr-num-key h-11">8</button>
+      <button onclick="pressNumpad('9')" class="ncr-key ncr-num-key h-11">9</button>
+
+      <button onclick="pressNumpad('4')" class="ncr-key ncr-num-key h-11">4</button>
+      <button onclick="pressNumpad('5')" class="ncr-key ncr-num-key h-11">5</button>
+      <button onclick="pressNumpad('6')" class="ncr-key ncr-num-key h-11">6</button>
+
+      <button onclick="pressNumpad('1')" class="ncr-key ncr-num-key h-11">1</button>
+      <button onclick="pressNumpad('2')" class="ncr-key ncr-num-key h-11">2</button>
+      <button onclick="pressNumpad('3')" class="ncr-key ncr-num-key h-11">3</button>
+
+      <button onclick="pressNumpad('0')" class="ncr-key ncr-num-key h-11">0</button>
+      <div class="grid grid-cols-2 gap-1">
+        <button onclick="moveSupCursor(-1)" class="ncr-key h-11 bg-amber-100/80 text-xs" title="Subir">⬆️</button>
+        <button onclick="moveSupCursor(1)" class="ncr-key h-11 bg-amber-100/80 text-xs" title="Bajar">⬇️</button>
+      </div>
+      <button onclick="handleMainEnter()" class="ncr-key h-11 bg-amber-400 hover:bg-amber-300 border-amber-700 text-slate-950 text-xs font-black">
+        ENTER ↵
+      </button>
+    </div>
+  </div>
+
+  <div class="mt-2.5 bg-[#e7e5dc] border-2 border-slate-400 rounded-lg p-2 shadow-inner font-mono-code text-slate-800 relative overflow-hidden">
+    <div class="text-[9px] font-bold uppercase text-slate-500 border-b border-slate-300 pb-0.5 mb-1 flex justify-between">
+      <span>📌 CÓDIGOS NUMÉRICOS RÁPIDOS</span>
+      <span>CLIC PARA ESCANEAR</span>
+    </div>
+    <div class="grid grid-cols-2 gap-1.5 text-xs">
+      <div onclick="quickScanCode('671576')" class="cursor-pointer hover:bg-amber-200/60 p-1 rounded transition-all">
+        <span class="text-[9px] block text-slate-600 font-bold">PASTILLA YARIS (S/ 95)</span>
+        <span class="font-black text-sm text-emerald-900 tracking-wider">671576</span>
+      </div>
+      <div onclick="quickScanCode('20391060')" class="cursor-pointer hover:bg-amber-200/60 p-1 rounded transition-all">
+        <span class="text-[9px] block text-slate-600 font-bold">FILTRO DENSO (S/ 35)</span>
+        <span class="font-black text-sm text-emerald-900 tracking-wider">20391060</span>
+      </div>
+    </div>
+    <div class="mt-1 pt-1 border-t border-dashed border-slate-400 text-[10px] flex justify-between text-slate-700">
+      <span><strong>Boleta Demo:</strong> 880001</span>
+      <span><strong>Sup:</strong> 0001 / 1234</span>
+    </div>
+  </div>
+</div>

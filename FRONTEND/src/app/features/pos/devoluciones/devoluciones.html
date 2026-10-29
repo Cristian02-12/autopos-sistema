@@ -1,1 +1,49 @@
-<p>devoluciones works!</p>
+<section id="module-audit" class="hidden h-full overflow-y-auto p-4 sm:p-6 bg-slate-100 space-y-6">
+  <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <span class="text-[10px] font-black uppercase tracking-widest text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded border border-amber-300">
+        AUDITORÍA SEPARADA POR TRANSACCIÓN • SUPERVISOR, DUEÑO Y PROGRAMADOR
+      </span>
+      <h2 class="text-lg font-extrabold text-slate-900 mt-1">Historial y Buscador de Ventas vs. Devoluciones</h2>
+      <p class="text-xs text-slate-500">
+        Consulta comprobantes por Fecha, Código Identificador Único QR o Cliente. Separado en dos paneles independientes para evitar confusiones.
+      </p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+      <div class="p-4 bg-slate-900 text-white flex items-center justify-between">
+        <div>
+          <h3 class="font-extrabold text-sm uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+            <i class="fa-solid fa-file-invoice-dollar"></i> 1. Registro de Ventas Emitidas
+          </h3>
+          <p class="text-[11px] text-slate-400">Busca por ID Único (ej. 880001), Fecha, Cliente o Serie</p>
+        </div>
+        <span id="audit-sales-count" class="font-mono-code text-xs font-black bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-500/30">0 Ventas</span>
+      </div>
+      <div class="p-3 bg-slate-50 border-b border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+        <input type="text" id="audit-sales-search" oninput="renderAuditModule()" placeholder="Buscar ID Único (880001), Cliente, DNI..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg">
+        <input type="text" id="audit-sales-date" oninput="renderAuditModule()" placeholder="Filtrar Fecha (ej. 24.10.26)..." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg font-mono-code">
+      </div>
+      <div id="audit-sales-list" class="p-3 space-y-2.5 overflow-y-auto max-h-[500px] flex-1 text-xs"></div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-rose-200 overflow-hidden flex flex-col">
+      <div class="p-4 bg-rose-950 text-white flex items-center justify-between">
+        <div>
+          <h3 class="font-extrabold text-sm uppercase tracking-wider text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-rotate-left"></i> 2. Registro de Devoluciones (Completas y Parciales)
+          </h3>
+          <p class="text-[11px] text-rose-200">Busca por ID Devolución (ej. 990001), ID Boleta Origen o Cliente</p>
+        </div>
+        <span id="audit-returns-count" class="font-mono-code text-xs font-black bg-rose-500/20 text-rose-200 px-2.5 py-1 rounded-lg border border-rose-400/30">0 Devoluciones</span>
+      </div>
+      <div class="p-3 bg-rose-50/50 border-b border-rose-100 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+        <input type="text" id="audit-returns-search" oninput="renderAuditModule()" placeholder="Buscar ID Devolución (990001), Boleta Origen..." class="w-full px-3 py-2 bg-white border border-rose-200 rounded-lg">
+        <input type="text" id="audit-returns-date" oninput="renderAuditModule()" placeholder="Filtrar Fecha (ej. 23.10.26)..." class="w-full px-3 py-2 bg-white border border-rose-200 rounded-lg font-mono-code">
+      </div>
+      <div id="audit-returns-list" class="p-3 space-y-2.5 overflow-y-auto max-h-[500px] flex-1 text-xs"></div>
+    </div>
+  </div>
+</section>

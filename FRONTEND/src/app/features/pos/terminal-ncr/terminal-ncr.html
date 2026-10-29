@@ -1,1 +1,187 @@
-<p>terminal-ncr works!</p>
+<div class="min-h-screen lg:h-screen flex flex-col select-none lg:overflow-hidden bg-slate-900">
+  
+  <!-- 1. Componente de Login por Código, Clave y 4 Roles -->
+  <app-login />
+
+  <!-- 2. Componente de Barra de Navegación Superior (1 línea en PC + Hamburguesa en Móvil) y Alerta de Cajón -->
+  <app-navbar-roles />
+
+  <!-- 3. Contenedor Principal de Módulos -->
+  <main class="flex-1 overflow-hidden relative bg-slate-900">
+
+    <!-- MÓDULO 1: TERMINAL NCR PUNTO DE VENTA -->
+    <section id="module-pos" class="h-full flex flex-col lg:flex-row p-2 sm:p-3 gap-3 overflow-hidden">
+      
+      <!-- MONITOR TÁCTIL NCR (IZQUIERDA / CENTRO - 70%) -->
+      <div class="flex-1 h-full bg-[#f4f5f7] rounded-2xl border-8 border-slate-800 shadow-2xl flex flex-col overflow-hidden relative">
+        
+        <!-- Franja Naranja Superior estilo Mass / NCR -->
+        <div class="bg-gradient-to-r from-[#d96b27] to-[#e07b39] text-white px-4 py-2 flex items-center justify-between border-b border-slate-300 shrink-0">
+          <div class="flex items-center gap-3">
+            <span class="font-black text-2xl italic tracking-tight">AutoMass <span class="text-base not-italic">✓</span></span>
+            <span id="ncr-mode-pill" class="bg-black/25 text-white text-[11px] font-bold px-2.5 py-0.5 rounded uppercase">
+              MODO VENTA MOSTRADOR
+            </span>
+          </div>
+          <button onclick="toggleCatalogDrawer()" class="bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-xs px-3 py-1.5 rounded-lg shadow flex items-center gap-1.5 border border-amber-400/40">
+            <i class="fa-solid fa-magnifying-glass-plus"></i>
+            <span>Catálogo Visual Autopartes / OEM (F9)</span>
+          </button>
+        </div>
+
+        <!-- Cuerpo Dividido de la Pantalla NCR: Área Principal (80%) + Botonera Táctil Derecha (20%) -->
+        <div class="flex-1 flex overflow-hidden">
+          
+          <!-- ÁREA CENTRAL DINÁMICA DE LA PANTALLA NCR -->
+          <div class="flex-1 flex flex-col justify-between p-3 overflow-hidden bg-[#eef0f4]">
+            
+            <!-- CABECERA DE ENTRADA DE COMANDOS / ESCÁNER (SOLO NÚMEROS) -->
+            <div class="mb-2 shrink-0">
+              <p id="ncr-prompt-title" class="text-xs font-extrabold text-slate-800">
+                Escanee el producto o ingrese el código numérico y presione Enter.
+              </p>
+              <p id="ncr-prompt-subtitle" class="text-[11px] text-slate-500 mb-1">
+                Barra numérica: ingresa código de barras (ej. 671576) o ID de Boleta (ej. 880001).
+              </p>
+              <div class="flex items-center gap-2">
+                <input 
+                  type="text" 
+                  id="ncr-main-input" 
+                  inputmode="numeric"
+                  onkeydown="handleMainInputKeydown(event)"
+                  placeholder="" 
+                  autocomplete="off"
+                  class="w-full sm:w-80 px-3 py-1.5 bg-white border-2 border-blue-600 rounded font-mono-code font-black text-base text-slate-900 focus:outline-none shadow-inner tracking-wider"
+                >
+                <span id="ncr-helper-hint" class="text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded border border-indigo-200 hidden sm:inline-block">
+                  💡 Solo números • Haz clic en un ítem y presiona <strong>BORRAR ITEM</strong> para quitarlo
+                </span>
+              </div>
+            </div>
+
+            <!-- VISTAS CENTRALES INTERCAMBIABLES SEGÚN EL ESTADO DE LA CAJA -->
+            <div class="flex-1 bg-white border border-slate-300 rounded overflow-y-auto relative flex flex-col">
+              
+              <!-- 1. VISTA TABLA DE VENTAS / MEDIOS DE PAGO -->
+              <div id="center-view-sales" class="flex-1 flex flex-col justify-between">
+                <div class="overflow-y-auto flex-1">
+                  <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-300">
+                        <th class="py-1.5 px-2.5">Artículo (Cód.)</th>
+                        <th class="py-1.5 px-2.5">Descripción (Clic para seleccionar)</th>
+                        <th class="py-1.5 px-2 text-center">Cant.</th>
+                        <th class="py-1.5 px-2 text-right">Valor</th>
+                        <th class="py-1.5 px-2 text-right">Descuento</th>
+                        <th class="py-1.5 px-2.5 text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody id="ncr-sales-tbody" class="divide-y divide-slate-200 font-mono-code text-xs"></tbody>
+                  </table>
+                </div>
+
+                <!-- Bandeja de Pagos Parciales / Bloques de Efectivo / Pagos Mixtos -->
+                <div id="ncr-partial-payments-box" class="hidden bg-emerald-50/90 border-t-2 border-emerald-500 p-2.5 shrink-0">
+                  <div class="flex items-center justify-between text-[11px] font-extrabold text-emerald-950 mb-1">
+                    <span><i class="fa-solid fa-money-bill-transfer mr-1"></i>ABONOS / PAGOS REGISTRADOS EN ESTA VENTA:</span>
+                    <span id="partial-paid-summary" class="font-mono-code">Abonado: S/ 0.00</span>
+                  </div>
+                  <div id="ncr-partial-payments-list" class="space-y-1 max-h-24 overflow-y-auto font-mono-code text-xs"></div>
+                </div>
+              </div>
+
+              <!-- 2, 3 y 4. Componente de Menú Supervisor, Autorizador y Tablas de Fondo/Retiro/Arqueo -->
+              <app-menu-supervisor />
+
+              <!-- 5. Componente de Devolución de Productos (Completa o Parcial) -->
+              <app-devoluciones />
+
+            </div>
+
+            <!-- PANEL INFERIOR DE RESUMEN DE TRANSACCIÓN -->
+            <div id="ncr-bottom-summary" class="mt-2 grid grid-cols-12 gap-2 shrink-0 text-xs">
+              <div class="col-span-5 bg-white border border-slate-300 rounded p-2 space-y-1">
+                <div class="flex justify-between">
+                  <span class="text-slate-600 font-semibold"><i class="fa-solid fa-cart-shopping mr-1"></i>Artículos:</span>
+                  <span id="sum-items-count" class="font-mono-code font-bold">0</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-600 font-semibold">Nombre:</span>
+                  <span id="sum-customer-name" class="font-bold text-slate-900 truncate max-w-[150px]">--</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-600 font-semibold">Doc / Placa:</span>
+                  <span id="sum-customer-doc" class="font-mono-code font-bold text-indigo-700">0</span>
+                </div>
+                <div class="flex justify-between border-t border-slate-100 pt-0.5">
+                  <span class="text-slate-600 font-semibold">Tipo transacción:</span>
+                  <span id="sum-doc-type" class="font-extrabold text-slate-900">Boleta</span>
+                </div>
+              </div>
+
+              <div class="col-span-7 bg-white border border-slate-300 rounded p-2 flex flex-col justify-between">
+                <div class="space-y-0.5">
+                  <div class="flex justify-between">
+                    <span class="font-bold text-slate-700">Subtotal</span>
+                    <span id="sum-subtotal" class="font-mono-code font-bold">S/ 0.00</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="font-bold text-slate-700">Ahorros (Desc.)</span>
+                    <span id="sum-savings" class="font-mono-code font-bold bg-[#f59e0b]/40 text-slate-900 px-1.5 rounded">S/ 0.00</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="font-bold text-slate-700">Vuelto</span>
+                    <span id="sum-change" class="font-mono-code font-bold text-emerald-700">S/ 0.00</span>
+                  </div>
+                </div>
+                <div class="flex justify-between items-baseline border-t border-slate-200 pt-1 mt-1">
+                  <span class="font-extrabold text-slate-900 text-xs">Por pagar</span>
+                  <span id="sum-total-pay" class="font-mono-code font-black text-base text-slate-950">S/ 0.00</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- BARRA DE ESTADO INFERIOR NCR -->
+            <div class="mt-1.5 pt-1 border-t border-slate-300 flex flex-wrap items-center justify-between text-[10px] font-mono-code text-slate-600 shrink-0">
+              <span id="ncr-status-line">23/10/2026 08:27 Operador: CRISTIAN ELINSON OLA Local: 1888 Caja: 0002 Tran: 5639 SRV999</span>
+              <span id="ncr-price-mode-indicator" class="font-bold text-indigo-700">TARIFA: PÚBLICO</span>
+            </div>
+          </div>
+
+          <!-- COLUMNA DERECHA DE BOTONES EN PANTALLA (8 SOFTKEYS DINÁMICOS) -->
+          <div id="ncr-softkeys-column" class="w-32 sm:w-36 bg-[#e4e7ec] border-l border-slate-300 p-1.5 grid grid-rows-8 gap-1.5 shrink-0"></div>
+        </div>
+
+        <!-- Componente Drawer Desplegable: Catálogo Visual de Autopartes y Equivalencias OEM -->
+        <app-catalogo-equivalencias />
+
+      </div>
+
+      <!-- Componente Teclado Físico Lateral NCR (Derecha - 30%) -->
+      <app-teclado-ncr />
+
+    </section>
+
+    <!-- MÓDULO 2: INVENTARIO DE AUTOPARTES (Catálogo, Conteo L-V, Recepción y Precios) -->
+    <app-layout-inventario />
+
+    <!-- MÓDULO 3: COTIZACIONES (Hoja Normal A4 + WhatsApp) -->
+    <app-cotizador-a4 />
+
+    <!-- MÓDULO 4: AUDITORÍA DE VENTAS Y DEVOLUCIONES -->
+    <app-ventas-devoluciones />
+
+    <!-- MÓDULO 5: PANEL DEL DUEÑO DE LA TIENDA Y REPORTES -->
+    <app-panel-dueno-reportes />
+
+    <!-- MÓDULO 6: PANEL DE PROGRAMADOR -->
+    <app-panel-programador />
+
+  </main>
+
+  <!-- 4. Componente de Modales de Baucher Digital y QR SIP -->
+  <app-visor-baucher-modal />
+
+  <!-- Contenedor de Notificaciones Toast -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+</div>

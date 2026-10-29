@@ -1,1 +1,31 @@
-<p>catalogo-equivalencias works!</p>
+<!-- DRAWER DESPLEGABLE: CATÁLOGO VISUAL DE AUTOPARTES Y EQUIVALENCIAS OEM -->
+<div id="catalog-drawer" class="hidden absolute inset-0 bg-slate-900/95 z-30 flex flex-col p-4 text-white">
+  <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-700">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid fa-car-on text-amber-400 text-lg"></i>
+      <div>
+        <h3 class="font-black text-sm uppercase">Buscador Visual de Autopartes y Equivalencias OEM</h3>
+        <p class="text-[11px] text-slate-400">Haz clic en cualquier repuesto para pasarlo por el lector hacia la pantalla de caja</p>
+      </div>
+    </div>
+    <button onclick="toggleCatalogDrawer()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold">
+      Cerrar Catálogo (Esc)
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 my-3">
+    <input type="text" id="cat-search-input" oninput="renderVisualCatalog()" placeholder="Buscar pieza, OEM (04465-0D150), SKU..." class="sm:col-span-2 px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-xs text-white focus:outline-none focus:border-amber-400">
+    <select id="cat-brand-filter" onchange="renderVisualCatalog()" class="px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-xs text-white">
+      <option value="">Todos los Vehículos (Marca)</option>
+      <option value="Toyota">Toyota (Yaris / Corolla / Hilux)</option>
+      <option value="Hyundai">Hyundai (Tucson / Elantra)</option>
+      <option value="Kia">Kia (Rio / Sportage)</option>
+      <option value="Nissan">Nissan (Sentra / Versa)</option>
+    </select>
+    <button onclick="clearCatalogOEMFilter()" id="cat-oem-reset-btn" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-xs font-bold text-amber-400">
+      Ver Todas las Piezas
+    </button>
+  </div>
+
+  <div id="visual-catalog-grid" class="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pr-1"></div>
+</div>

@@ -1,1 +1,43 @@
-<p>menu-supervisor works!</p>
+<!-- 2. VISTA MENÚ SUPERVISOR O MENÚ DEVOLUCIÓN -->
+<div id="center-view-sup-menu" class="hidden flex-1 p-3 flex flex-col">
+  <p id="menu-list-instruction" class="text-xs font-extrabold text-slate-800 mb-2">
+    Navega con las flechas o ingresa el número y presiona Enter.
+  </p>
+  <div id="sup-menu-list" class="divide-y divide-slate-200 border border-slate-200 rounded bg-white"></div>
+</div>
+
+<!-- 3. VISTA AUTORIZADOR / CREDENCIALES -->
+<div id="center-view-auth" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center">
+  <div class="bg-[#d96b27]/90 text-white px-6 py-2 rounded-full font-black text-2xl italic tracking-tight mb-4 shadow">
+    AutoMass ✓
+  </div>
+  <p id="auth-step-title" class="font-extrabold text-sm text-slate-800 uppercase tracking-wide mb-1">
+    INGRESAR AUTORIZADOR
+  </p>
+  <p id="auth-step-subtitle" class="text-xs font-bold text-slate-500 mb-3">
+    (Cód. Supervisora: 0001 • Clave: 1234)
+  </p>
+  <input 
+    type="text" 
+    id="ncr-auth-box-mirror" 
+    readonly
+    class="w-64 px-3 py-2 bg-white border-2 border-slate-700 text-center font-mono-code font-bold text-base tracking-widest"
+  >
+</div>
+
+<!-- 4. VISTA FONDO FIJO / RETIRO / ARQUEO DE CAJA -->
+<div id="center-view-cash-table" class="hidden flex-1 flex flex-col justify-between">
+  <table class="w-full text-left border-collapse text-xs">
+    <thead>
+      <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-300">
+        <th class="py-2 px-4">Medios de pago</th>
+        <th class="py-2 px-4 text-right">Monto</th>
+      </tr>
+    </thead>
+    <tbody id="ncr-cash-tbody" class="divide-y divide-slate-200 font-mono-code text-xs"></tbody>
+  </table>
+  <div class="p-3 bg-slate-50 border-t-2 border-slate-300 flex justify-between items-center font-mono-code">
+    <span class="text-base font-extrabold text-slate-800">Total</span>
+    <span id="ncr-cash-total" class="text-lg font-black text-slate-900">S/ 0.00</span>
+  </div>
+</div>

@@ -1,1 +1,211 @@
-<p>panel-dueno-reportes works!</p>
+<section id="module-owner" class="hidden h-full overflow-y-auto p-4 sm:p-6 bg-slate-100 space-y-6">
+  <!-- Cabecera Ejecutiva del Dueño -->
+  <div
+    class="bg-gradient-to-r from-slate-900 via-slate-800 to-amber-950 text-white p-5 rounded-2xl shadow-lg border border-amber-500/30 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div>
+      <span
+        class="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded border border-amber-400/30">
+        GERENCIA GENERAL • ROL DUEÑO Y PROGRAMADOR
+      </span>
+      <h2 class="text-xl font-black mt-1">Resumen Ejecutivo de Ventas, Auditoría de Conteos y Tickets de Caja</h2>
+      <p class="text-xs text-slate-300">
+        Visualiza el rendimiento de la tienda por Día, Semana, Mes y Año con gráficos interactivos, descarga reportes en
+        PDF/Excel y envía tickets de corrección al Programador.
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- Selector de Período: Día, Semana, Mes, Año -->
+      <div class="bg-slate-950/70 p-1 rounded-xl border border-slate-700 flex items-center gap-1 text-xs">
+        <button onclick="setOwnerPeriod('DAY')" id="owner-period-DAY"
+          class="px-3 py-1.5 rounded-lg font-black bg-amber-400 text-slate-950">Día (Hoy)</button>
+        <button onclick="setOwnerPeriod('WEEK')" id="owner-period-WEEK"
+          class="px-3 py-1.5 rounded-lg font-bold text-slate-300 hover:text-white">Semana</button>
+        <button onclick="setOwnerPeriod('MONTH')" id="owner-period-MONTH"
+          class="px-3 py-1.5 rounded-lg font-bold text-slate-300 hover:text-white">Mes</button>
+        <button onclick="setOwnerPeriod('YEAR')" id="owner-period-YEAR"
+          class="px-3 py-1.5 rounded-lg font-bold text-slate-300 hover:text-white">Año 2026</button>
+      </div>
+      <!-- Botones de Exportación PDF y Excel -->
+      <button onclick="exportOwnerReportPDF()"
+        class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs rounded-xl shadow flex items-center gap-1.5">
+        <i class="fa-solid fa-file-pdf"></i> Descargar PDF
+      </button>
+      <button onclick="exportOwnerReportExcel()"
+        class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow flex items-center gap-1.5">
+        <i class="fa-solid fa-file-excel"></i> Descargar Excel (.CSV)
+      </button>
+    </div>
+  </div>
+
+  <!-- Tarjetas KPI del Período Seleccionado -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+      <span id="owner-kpi-label-1" class="text-[11px] font-extrabold uppercase text-slate-500 block">Ventas Brutas
+        (Hoy)</span>
+      <span id="owner-kpi-sales" class="font-mono-code text-2xl font-black text-slate-900 mt-1 block">S/ 0.00</span>
+      <span id="owner-kpi-growth" class="text-[11px] font-bold text-emerald-600 mt-1 block"><i
+          class="fa-solid fa-arrow-trend-up mr-1"></i>+14.2% vs período anterior</span>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+      <span class="text-[11px] font-extrabold uppercase text-slate-500 block">Comprobantes Emitidos</span>
+      <span id="owner-kpi-tickets" class="font-mono-code text-2xl font-black text-indigo-700 mt-1 block">0</span>
+      <span id="owner-kpi-avg" class="text-[11px] font-semibold text-slate-500 mt-1 block">Ticket Promedio: S/
+        0.00</span>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+      <span class="text-[11px] font-extrabold uppercase text-slate-500 block">Cobros Efectivo vs Digital</span>
+      <span id="owner-kpi-cash-vs-dig" class="font-mono-code text-base font-black text-emerald-700 mt-1 block">Efectivo:
+        S/ 0 | Digital: S/ 0</span>
+      <span class="text-[11px] text-slate-500 mt-1 block">Cuadre auditado en tiempo real</span>
+    </div>
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+      <span class="text-[11px] font-extrabold uppercase text-slate-500 block">Utilidad Neta Estimada (34%)</span>
+      <span id="owner-kpi-profit" class="font-mono-code text-2xl font-black text-amber-600 mt-1 block">S/ 0.00</span>
+      <span class="text-[11px] font-semibold text-slate-500 mt-1 block">Descontando costo de repuestos</span>
+    </div>
+  </div>
+
+  <!-- Gráficos Interactivos de Ventas por Período y Distribución por Categorías -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <!-- Gráfico 1: Evolución de Ventas (Barras Interactivas) -->
+    <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <div>
+          <h3 id="owner-chart-title" class="font-extrabold text-sm text-slate-900">Gráfico de Evolución de Ventas —
+            Vista Diaria</h3>
+          <p class="text-[11px] text-slate-500">Pasa el cursor sobre cada barra para ver el detalle exacto en Soles (S/)
+          </p>
+        </div>
+        <span class="text-xs font-mono-code font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg">Moneda: PEN
+          (S/)</span>
+      </div>
+      <div id="owner-bar-chart" class="h-56 flex items-end justify-between gap-2 pt-6 px-2 border-b border-slate-200">
+        <!-- Barras generadas dinámicamente -->
+      </div>
+      <div id="owner-bar-labels"
+        class="flex justify-between gap-2 pt-2 px-2 text-[10px] font-mono-code font-bold text-slate-600">
+        <!-- Etiquetas eje X -->
+      </div>
+    </div>
+
+    <!-- Gráfico 2: Ventas por Categoría Automotriz y Medios de Pago -->
+    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+      <div class="border-b border-slate-100 pb-3">
+        <h3 class="font-extrabold text-sm text-slate-900">Participación por Categoría y Pagos</h3>
+        <p class="text-[11px] text-slate-500">Rotación acumulada en el período seleccionado</p>
+      </div>
+      <div id="owner-category-breakdown" class="space-y-3 text-xs">
+        <!-- Barras de progreso por categoría -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Generador de Tickets de Corrección de Caja para el Programador (Fondo Fijo erróneo / Retiro erróneo) -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Crear Ticket Tipo 1: Eliminar Fondo Fijo Erróneo (>150 o duplicado) -->
+    <div class="bg-white rounded-2xl border-2 border-rose-200 shadow-sm p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-rose-100 pb-3">
+        <div>
+          <span class="text-[10px] font-black uppercase bg-rose-100 text-rose-800 px-2 py-0.5 rounded">TICKET DE
+            CORRECCIÓN #1</span>
+          <h3 class="font-extrabold text-sm text-slate-900 mt-1">Solicitar Eliminación de Fondo Fijo Erróneo</h3>
+          <p class="text-[11px] text-slate-500">Si el cajero se asignó más de S/ 150.00 o duplicó un fondo fijo
+            adicional, envía este ticket al Programador para eliminarlo.</p>
+        </div>
+        <i class="fa-solid fa-ticket text-2xl text-rose-500"></i>
+      </div>
+
+      <!-- Lista rápida de bauchers de Fondo Fijo emitidos para copiar su código -->
+      <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-[11px]">
+        <span class="font-bold text-slate-700 block mb-1">Bauchers de Fondo Fijo Registrados en Caja (Clic para
+          autocompletar):</span>
+        <div id="owner-fund-vouchers-Chips" class="flex flex-wrap gap-1.5">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <form onsubmit="createFundDeletionTicket(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Código de Cajero:</label>
+          <input type="text" id="tk-fund-cashier" required value="0019" placeholder="Ej. 0019"
+            class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono-code font-bold">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Código Baucher Fondo Fijo:</label>
+          <input type="text" id="tk-fund-voucher" required placeholder="Ej. FF-5636"
+            class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono-code font-bold text-rose-700">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="font-bold text-slate-700 block mb-1">Detalle del Error:</label>
+          <input type="text" id="tk-fund-note" required placeholder="Ej. Cajero ingresó fondo fijo adicional por error"
+            class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl">
+        </div>
+        <div class="sm:col-span-2 flex justify-end">
+          <button type="submit"
+            class="px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-black rounded-xl shadow flex items-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> Enviar Ticket de Eliminación al Programador
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Crear Ticket Tipo 2: Corregir Monto de Retiro Erróneo (Ej. 401 en lugar de 400) -->
+    <div class="bg-white rounded-2xl border-2 border-indigo-200 shadow-sm p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-indigo-100 pb-3">
+        <div>
+          <span class="text-[10px] font-black uppercase bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">TICKET DE
+            CORRECCIÓN #2</span>
+          <h3 class="font-extrabold text-sm text-slate-900 mt-1">Solicitar Corrección de Retiro de Efectivo (Monto No
+            Redondo)</h3>
+          <p class="text-[11px] text-slate-500">Si el cajero digitó por error S/ 401.00 en lugar de S/ 400.00 en su
+            retiro, envía este ticket para que el Programador lo corrija.</p>
+        </div>
+        <i class="fa-solid fa-money-bill-transfer text-2xl text-indigo-600"></i>
+      </div>
+
+      <!-- Lista rápida de bauchers de Retiro emitidos -->
+      <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-[11px]">
+        <span class="font-bold text-slate-700 block mb-1">Bauchers de Retiro Registrados en Caja (Clic para
+          autocompletar):</span>
+        <div id="owner-withdrawal-vouchers-chips" class="flex flex-wrap gap-1.5">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <form onsubmit="createWithdrawalCorrectionTicket(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Código de Cajero:</label>
+          <input type="text" id="tk-ret-cashier" required value="0019" placeholder="Ej. 0019"
+            class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono-code font-bold">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">DNI del Cajero:</label>
+          <input type="text" id="tk-ret-dni" required value="73075981" maxlength="8" placeholder="73075981"
+            class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono-code font-bold">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Código Único Baucher Retiro:</label>
+          <input type="text" id="tk-ret-voucher" required placeholder="Ej. RET-5640"
+            class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono-code font-bold text-indigo-700">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="font-bold text-slate-700 block mb-1">Explicación / Monto Correcto Exacto y Redondo:</label>
+          <input type="text" id="tk-ret-note" required
+            placeholder="Ej. Digitó 401.00 soles por error, corregir al monto redondo 400.00"
+            class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Monto Correcto (S/):</label>
+          <input type="number" step="10" id="tk-ret-target-amount" required value="400"
+            class="w-full p-2.5 bg-indigo-50 border-2 border-indigo-500 rounded-xl font-mono-code font-black text-indigo-950">
+        </div>
+        <div class="sm:col-span-3 flex justify-end">
+          <button type="submit"
+            class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl shadow flex items-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> Enviar Ticket de Corrección de Retiro al Programador
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

@@ -1,1 +1,148 @@
-<p>panel-programador works!</p>
+<section id="module-programmer" class="hidden h-full overflow-y-auto p-4 sm:p-6 bg-slate-950 text-white space-y-6">
+  <div
+    class="bg-gradient-to-r from-indigo-950 to-slate-900 p-5 rounded-2xl border border-indigo-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <span
+        class="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded border border-amber-400/30">
+        ACCESO EXCLUSIVO DE PROGRAMADOR / SUPERADMIN
+      </span>
+      <h2 class="text-xl font-black mt-1">Panel Maestro de Tickets de Soporte, Usuarios y Parámetros (Zero-Code)</h2>
+      <p class="text-xs text-slate-300">Resuelve tickets enviados por el Dueño (eliminar fondos fijos erróneos o
+        corregir retiros mal digitados), administra usuarios y controla todo el sistema.</p>
+    </div>
+  </div>
+
+  <!-- SECCIÓN DE TICKETS DE SOPORTE ENVIADOS POR EL DUEÑO (FONDO FIJO Y RETIROS) -->
+  <div class="bg-slate-900 rounded-2xl border-2 border-indigo-500/40 p-5 space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+      <div>
+        <h3 class="font-extrabold text-sm uppercase tracking-wider text-amber-400 flex items-center gap-2">
+          <i class="fa-solid fa-headset"></i> Bandeja de Tickets del Dueño (Corrección de Fondos Fijos y Retiros de
+          Caja)
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Elimina fondos fijos duplicados/erróneos o corrige montos de retiro no redondos (ej. de S/ 401.00 a S/ 400.00)
+          para cuadrar automáticamente la caja del cajero.
+        </p>
+      </div>
+    </div>
+
+    <div id="programmer-tickets-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- Populated via JS -->
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Columna 1 y 2: Gestión de Trabajadores y Roles -->
+    <div class="lg:col-span-2 bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-extrabold text-sm uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+          <i class="fa-solid fa-users-gear"></i> Trabajadores Registrados y Credenciales de Acceso
+        </h3>
+      </div>
+
+      <!-- Formulario para crear nuevo trabajador -->
+      <form onsubmit="createNewWorker(event)"
+        class="bg-slate-800/70 p-3.5 rounded-xl border border-slate-700 grid grid-cols-1 sm:grid-cols-6 gap-2.5 text-xs">
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase block">Código:</label>
+          <input type="text" id="pw-code" required placeholder="Ej. 0025"
+            class="w-full mt-1 p-2 bg-slate-900 border border-slate-600 rounded font-mono-code font-bold text-amber-400">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase block">Clave PIN:</label>
+          <input type="text" id="pw-pass" required placeholder="Ej. 4321"
+            class="w-full mt-1 p-2 bg-slate-900 border border-slate-600 rounded font-mono-code font-bold">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="text-[10px] font-bold text-slate-400 uppercase block">Nombre Completo:</label>
+          <input type="text" id="pw-name" required placeholder="Ej. MARCO ANTONIO RUIZ"
+            class="w-full mt-1 p-2 bg-slate-900 border border-slate-600 rounded uppercase font-semibold">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase block">DNI:</label>
+          <input type="text" id="pw-dni" required maxlength="8" placeholder="71234567"
+            class="w-full mt-1 p-2 bg-slate-900 border border-slate-600 rounded font-mono-code">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-400 uppercase block">Rol del Sistema:</label>
+          <select id="pw-role"
+            class="w-full mt-1 p-2 bg-slate-900 border border-slate-600 rounded font-bold text-emerald-400">
+            <option value="CAJERO">CAJERO</option>
+            <option value="SUPERVISOR">SUPERVISOR</option>
+            <option value="DUENO">DUEÑO DE TIENDA</option>
+            <option value="PROGRAMADOR">PROGRAMADOR</option>
+          </select>
+        </div>
+        <div class="sm:col-span-6 flex justify-end pt-1">
+          <button type="submit"
+            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold rounded-lg text-xs flex items-center gap-1.5">
+            <i class="fa-solid fa-user-plus"></i> Registrar Trabajador en el Sistema
+          </button>
+        </div>
+      </form>
+
+      <!-- Tabla de Usuarios -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-800 text-slate-400 uppercase text-[10px] font-extrabold">
+              <th class="py-2.5 px-3">Código</th>
+              <th class="py-2.5 px-3">Clave</th>
+              <th class="py-2.5 px-3">Operador</th>
+              <th class="py-2.5 px-3">DNI</th>
+              <th class="py-2.5 px-3">Rol / Permisos</th>
+              <th class="py-2.5 px-3 text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="programmer-users-tbody" class="divide-y divide-slate-800 font-mono-code">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Columna 3: Parámetros Globales de la Empresa y Caja -->
+    <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4 text-xs">
+      <h3
+        class="font-extrabold text-sm uppercase tracking-wider text-amber-400 border-b border-slate-800 pb-3 flex items-center gap-2">
+        <i class="fa-solid fa-sliders"></i> Parámetros del Negocio y Bauchers
+      </h3>
+      <div class="space-y-3">
+        <div>
+          <label class="font-bold text-slate-400 block mb-1">Razón Social en Bauchers:</label>
+          <input type="text" id="cfg-company" value="AUTOPARTES HARD DISCOUNT S.A.C."
+            class="w-full p-2 bg-slate-800 border border-slate-700 rounded font-mono-code text-white">
+        </div>
+        <div>
+          <label class="font-bold text-slate-400 block mb-1">RUC Empresa:</label>
+          <input type="text" id="cfg-ruc" value="20608280333"
+            class="w-full p-2 bg-slate-800 border border-slate-700 rounded font-mono-code text-white">
+        </div>
+        <div>
+          <label class="font-bold text-slate-400 block mb-1">Dirección Sucursal:</label>
+          <input type="text" id="cfg-address" value="CAL. CESAR MORELLI 139 P-3 SAN BORJA, LIMA"
+            class="w-full p-2 bg-slate-800 border border-slate-700 rounded font-mono-code text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-400 block mb-1">Fondo Fijo Estándar (S/):</label>
+            <input type="number" id="cfg-default-fund" value="150.00"
+              class="w-full p-2 bg-slate-800 border border-slate-700 rounded font-mono-code text-emerald-400 font-bold">
+          </div>
+          <div>
+            <label class="font-bold text-slate-400 block mb-1">Tipo Cambio USD:</label>
+            <input type="number" step="0.01" id="cfg-usd" value="3.72"
+              class="w-full p-2 bg-slate-800 border border-slate-700 rounded font-mono-code text-white">
+          </div>
+        </div>
+        <button onclick="saveSystemConfig()"
+          class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl uppercase">
+          Guardar Configuración Global
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>

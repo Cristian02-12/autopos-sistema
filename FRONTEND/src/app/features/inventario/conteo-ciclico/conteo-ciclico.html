@@ -1,1 +1,90 @@
-<p>conteo-ciclico works!</p>
+<div id="inv-subview-count" class="hidden space-y-4">
+  <div class="bg-gradient-to-r from-indigo-950 to-slate-900 text-white p-5 rounded-2xl border border-indigo-500/30 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div>
+      <span class="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded border border-amber-400/30">
+        AUDITORÍA FÍSICA DE APERTURA (2 A 3 HORAS) • ROTACIÓN CONTINUA ANUAL POR CATEGORÍAS
+      </span>
+      <h3 class="text-lg font-black mt-1">Conteo Cíclico de Productos en Tienda y Almacén (Lunes a Viernes)</h3>
+      <p class="text-xs text-slate-300 mt-0.5">
+        El sistema selecciona automáticamente la categoría correspondiente al día hábil para evitar tediosos conteos generales. Los sábados y domingos no hay conteo. Si queda pendiente alguna categoría el viernes, continúa el lunes siguiente hasta completar toda la tienda y reiniciar el ciclo.
+      </p>
+    </div>
+    <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700 shrink-0 space-y-1.5 text-xs">
+      <label class="text-[10px] font-extrabold uppercase text-amber-400 block">Día de la Semana / Ciclo Activo:</label>
+      <select id="count-day-selector" onchange="changeCountDay(this.value)" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-600 rounded-lg font-bold text-white">
+        <option value="1">Lunes (Cat. 1: Frenos, Pastillas y Discos)</option>
+        <option value="2">Martes (Cat. 2: Filtros y Motor)</option>
+        <option value="3">Miércoles (Cat. 3: Suspensión y Dirección)</option>
+        <option value="4">Jueves (Cat. 4: Sistema Eléctrico y Bujías)</option>
+        <option value="5">Viernes (Cat. 5: Lubricantes y Fluidos)</option>
+        <option value="6">Sábado (⏸️ Sin Conteo Programado)</option>
+        <option value="0">Domingo (⏸️ Sin Conteo Programado)</option>
+      </select>
+      <div class="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
+        <span id="count-cycle-week-label">Ciclo Anual: Semana #14 (Continuo)</span>
+        <button onclick="advanceNextWeekCycle()" class="text-indigo-300 hover:text-white underline font-bold">Avanzar Lunes Sig. ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="count-weekend-blocker" class="hidden bg-amber-50 border-2 border-amber-400 rounded-2xl p-8 text-center space-y-3">
+    <i class="fa-solid fa-calendar-xmark text-4xl text-amber-600"></i>
+    <h4 class="text-base font-black text-slate-900 uppercase">Sábados y Domingos No Hay Conteo de Inventario</h4>
+    <p class="text-xs text-slate-600 max-w-xl mx-auto">
+      Por disposición operativa de la tienda, los días sábado y domingo la atención se concentra 100% en ventas de mostrador. El conteo cíclico por categorías se reanuda automáticamente el día <strong>Lunes en la apertura de tienda</strong> continuando exactamente donde quedó el viernes.
+    </p>
+    <button onclick="changeCountDay('1')" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-extrabold">
+      Simular Apertura del Lunes (Frenos y Discos)
+    </button>
+  </div>
+
+  <div id="count-weekday-workspace" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between">
+      <div>
+        <div class="p-4 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span id="count-active-cat-badge" class="text-[10px] font-black uppercase bg-amber-400 text-slate-950 px-2 py-0.5 rounded">CATEGORÍA DEL DÍA</span>
+            <h4 id="count-active-title" class="font-extrabold text-sm mt-1">Productos Asignados para Contar Hoy</h4>
+          </div>
+          <span class="text-[11px] text-slate-300 font-mono-code">Ingresa el conteo físico de tienda + almacén</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 text-slate-600 font-extrabold uppercase text-[11px] border-b border-slate-200">
+                <th class="py-3 px-4">Código / Repuesto</th>
+                <th class="py-3 px-4">Ubicación</th>
+                <th class="py-3 px-3 text-center">Stock Sistema</th>
+                <th class="py-3 px-3 text-center">Conteo Físico (Tienda)</th>
+                <th class="py-3 px-3 text-center">Diferencia Uds.</th>
+                <th class="py-3 px-4 text-right">Impacto Dinero (S/)</th>
+              </tr>
+            </thead>
+            <tbody id="count-items-tbody" class="divide-y divide-slate-200 font-mono-code"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div id="count-summary-totals" class="font-mono-code font-bold text-slate-800"></div>
+        <button onclick="submitDailyInventoryCountReport()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl shadow flex items-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Finalizar y Enviar Reporte de Conteo al Dueño y Programador</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+      <div class="p-4 bg-slate-800 text-white">
+        <h4 class="font-extrabold text-xs uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-file-shield text-amber-400"></i> Reportes de Conteo Enviados
+        </h4>
+        <p class="text-[11px] text-slate-300 mt-0.5">
+          El Supervisor envía el reporte diario. Solo el <strong>Dueño</strong> y el <strong>Programador</strong> pueden autorizar y aplicar el ajuste de stock.
+        </p>
+      </div>
+      <div id="count-reports-list" class="p-3 space-y-3 overflow-y-auto max-h-[460px] flex-1 text-xs"></div>
+    </div>
+  </div>
+</div>
